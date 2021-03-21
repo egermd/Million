@@ -3,6 +3,28 @@ import requests
 from telebot.types import ReplyKeyboardMarkup, KeyboardButton
 import json
 import os
+import redis
+
+REDIS_URL = os.environ.get('REDIS_URL')
+
+dict_db = {}
+
+
+def save(key, value):
+    if REDIS_URL:
+        redis_db = redis.from_url(REDIS_URL)
+        redis_db.set(key, value)
+    else:
+        dict_db[key] = value
+
+
+def load(key):
+    if REDIS_URL:
+        redis_db = redis.from_url(REDIS_URL)
+        return redis_db.get()
+    else:
+        return dict_db.get(key)
+
 
 token = os.environ['TELEGRAM_TOKEN']
 api_url = 'https://stepik.akentev.com/api/millionaire'
